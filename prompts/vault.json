@@ -1,0 +1,14 @@
+[
+  {
+    "version": 1,
+    "prompt": "Summarize this text: {text}",
+    "note": "Version 1 - basic prompt",
+    "timestamp": "2026-05-15 18:22:32"
+  },
+  {
+    "version": 2,
+    "prompt": "You are an expert summarizer. Extract the 3 most important points in under 50 words: {text}",
+    "note": "Version 2 - added role and word limit",
+    "timestamp": "2026-05-15 18:22:32"
+  }
+]
