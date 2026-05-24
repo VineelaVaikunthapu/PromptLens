@@ -10,5 +10,11 @@
     "prompt": "You are an expert summarizer. Extract the 3 most important points in under 50 words: {text}",
     "note": "Version 2 - added role and word limit",
     "timestamp": "2026-05-15 18:22:32"
+  },
+  {
+    "version": 3,
+    "prompt": "explain api key",
+    "note": "i changes the complete topic",
+    "timestamp": "2026-05-21 18:09:00"
   }
 ]
