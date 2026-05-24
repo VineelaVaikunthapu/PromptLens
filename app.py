@@ -1,11 +1,16 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify,session, redirect
 from vault import save_prompts, load_prompts
 from runner import generate_test_cases
 import anthropic
 import json
-from config import ANTHROPIC_API_KEY, MODEL, MAX_TOKENS
+from config import ANTHROPIC_API_KEY, MODEL, MAX_TOKENS, SECRET_KEY
+from auth import signup, login
+from database import init_db
+
 
 app = Flask(__name__)
+app.secret_key = SECRET_KEY
+init_db
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 @app.route("/")
@@ -89,6 +94,32 @@ Return only JSON, nothing else.
     result = json.loads(raw[start:end])
     
     return jsonify(result)
+
+@app.route("/signup", methods=["POST"])
+def signup_route():
+    data = request.json
+    result = signup(data["name"], data["email"], data["password"])
+    return jsonify(result)
+
+@app.route("/login", methods=["POST"])
+def login_route():
+    data = request.json
+    result = login(data["email"], data["password"])
+    if result["success"]:
+        session["user_id"] = result["user"]["id"]
+        session["user_name"] = result["user"]["name"]
+    return jsonify(result)
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
+
+@app.route("/dashboard")
+def dashboard():
+    if "user_id" not in session:
+        return redirect("/")
+    return render_template("dashboard.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
