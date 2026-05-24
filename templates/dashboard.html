@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — PromptLens</title>
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">PromptLens</div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar" id="userAvatar">V</div>
+            <div class="user-info">
+                <div class="user-name" id="userName">Loading...</div>
+                <div class="user-tag">Prompt Engineer</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-item active">
+                <span class="nav-icon">⊞</span>
+                Dashboard
+            </a>
+            <a href="/tool" class="nav-item">
+                <span class="nav-icon">✦</span>
+                New Prompt
+            </a>
+            <a href="/dashboard" class="nav-item">
+                <span class="nav-icon">◷</span>
+                History
+            </a>
+        </nav>
+
+        <a href="/logout" class="sidebar-logout">
+            <span>↪</span> Log out
+        </a>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- HEADER -->
+        <div class="dash-header">
+            <div>
+                <h1 id="greeting">Hello!</h1>
+                <p class="dash-sub">Here's how your prompts are performing.</p>
+            </div>
+            <a href="/tool" class="btn-new">
+                New Prompt →
+            </a>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="stats-grid">
+            <div class="stat-card hover-lift">
+                <div class="stat-card-label">Total Prompts</div>
+                <div class="stat-card-value" id="totalPrompts">—</div>
+                <div class="stat-card-sub">prompts analyzed</div>
+            </div>
+            <div class="stat-card hover-lift">
+                <div class="stat-card-label">Average Score</div>
+                <div class="stat-card-value" id="avgScore">—</div>
+                <div class="stat-card-sub">out of 10</div>
+            </div>
+            <div class="stat-card hover-lift best">
+                <div class="stat-card-label">Best Score</div>
+                <div class="stat-card-value" id="bestScore">—</div>
+                <div class="stat-card-sub">your highest yet</div>
+            </div>
+        </div>
+
+        <!-- GRAPH + RECENT -->
+        <div class="dash-grid">
+
+            <!-- SCORE GRAPH -->
+            <div class="dash-card graph-card">
+                <div class="card-header">
+                    <h3>Score Improvement</h3>
+                    <span class="card-tag">Over time</span>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="scoreChart"></canvas>
+                    <div id="noData" class="no-data" style="display:none;">
+                        <p>Submit your first prompt to see your progress here.</p>
+                        <a href="/tool" class="btn-new" style="margin-top:16px;">Start now →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECENT PROMPTS -->
+            <div class="dash-card recent-card">
+                <div class="card-header">
+                    <h3>Recent Prompts</h3>
+                    <span class="card-tag">Last 5</span>
+                </div>
+                <div id="recentList" class="recent-list">
+                    <div class="loading-state">Loading...</div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>

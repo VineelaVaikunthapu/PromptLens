@@ -1,4 +1,3 @@
-// Custom cursor
 const cursor = document.getElementById('cursor');
 const follower = document.getElementById('cursorFollower');
 
@@ -11,7 +10,6 @@ document.addEventListener('mousemove', (e) => {
     }, 80);
 });
 
-// Nav scroll effect
 window.addEventListener('scroll', () => {
     const nav = document.getElementById('navbar');
     if (window.scrollY > 50) {
@@ -21,24 +19,10 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Reveal on scroll
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
-    });
-}, { threshold: 0.15 });
-
-reveals.forEach(el => observer.observe(el));
-
-// Auth modal
 function showSection(type) {
     const authSection = document.getElementById('auth-section');
     authSection.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-
     if (type === 'login') {
         document.getElementById('signupForm').style.display = 'none';
         document.getElementById('loginForm').style.display = 'block';
@@ -53,12 +37,10 @@ function hideAuth() {
     document.body.style.overflow = '';
 }
 
-// Close auth on backdrop click
 document.getElementById('auth-section').addEventListener('click', function(e) {
     if (e.target === this) hideAuth();
 });
 
-// Signup
 async function handleSignup() {
     const name = document.getElementById('signupName').value.trim();
     const email = document.getElementById('signupEmail').value.trim();
@@ -86,9 +68,7 @@ async function handleSignup() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password })
         });
-
         const data = await res.json();
-
         if (data.success) {
             msg.textContent = 'Account created! Logging you in...';
             msg.className = 'auth-msg success';
@@ -113,7 +93,6 @@ async function autoLogin(email, password) {
     if (data.success) window.location.href = '/dashboard';
 }
 
-// Login
 async function handleLogin() {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
@@ -134,9 +113,7 @@ async function handleLogin() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
-
         const data = await res.json();
-
         if (data.success) {
             msg.textContent = 'Welcome back!';
             msg.className = 'auth-msg success';
@@ -150,8 +127,12 @@ async function handleLogin() {
         msg.className = 'auth-msg error';
     }
 }
-window.addEventListener('load', () => {
-    reveals.forEach(el => {
-        el.classList.add('visible');
-    });
+
+window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (nav && window.scrollY > 50) {
+        nav.classList.add('scrolled');
+    } else if (nav) {
+        nav.classList.remove('scrolled');
+    }
 });

@@ -5,7 +5,7 @@ import anthropic
 import json
 from config import ANTHROPIC_API_KEY, MODEL, MAX_TOKENS, SECRET_KEY
 from auth import signup, login
-from database import init_db
+from database import get_connection, init_db
 
 
 app = Flask(__name__)
@@ -52,8 +52,16 @@ Return only JSON, nothing else.
     start = raw.find("{")
     end = raw.rfind("}") + 1
     result = json.loads(raw[start:end])
-    save_prompts(prompt, note=f"Score: {result['score']}/10")
-    
+    # save to database
+    if "user_id" in session:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO prompts (user_id, prompt, score, feedback) VALUES (?, ?, ?, ?)",
+            (session["user_id"], prompt, result["score"], result["feedback"])
+        )
+        conn.commit()
+        conn.close()
     return jsonify(result)
 
 @app.route("/compare", methods=["POST"])
@@ -120,6 +128,64 @@ def dashboard():
     if "user_id" not in session:
         return redirect("/")
     return render_template("dashboard.html")
+@app.route("/api/stats")
+def get_stats():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # get total prompts
+    cursor.execute(
+        "SELECT COUNT(*) as total FROM prompts WHERE user_id = ?",
+        (session["user_id"],)
+    )
+    total = cursor.fetchone()["total"]
+    
+    # get average score
+    cursor.execute(
+        "SELECT AVG(score) as avg FROM prompts WHERE user_id = ?",
+        (session["user_id"],)
+    )
+    avg = cursor.fetchone()["avg"]
+    
+    # get best score
+    cursor.execute(
+        "SELECT MAX(score) as best FROM prompts WHERE user_id = ?",
+        (session["user_id"],)
+    )
+    best = cursor.fetchone()["best"]
+    
+    # get recent prompts
+    cursor.execute(
+        "SELECT prompt, score, feedback, created_at FROM prompts WHERE user_id = ? ORDER BY created_at DESC LIMIT 5",
+        (session["user_id"],)
+    )
+    recent = [dict(row) for row in cursor.fetchall()]
+    
+    # get score history for graph
+    cursor.execute(
+        "SELECT score, created_at FROM prompts WHERE user_id = ? ORDER BY created_at ASC",
+        (session["user_id"],)
+    )
+    history = [dict(row) for row in cursor.fetchall()]
+    
+    conn.close()
+    
+    return jsonify({
+        "name": session["user_name"],
+        "total": total,
+        "average": round(avg, 1) if avg else 0,
+        "best": best or 0,
+        "recent": recent,
+        "history": history
+    })
+@app.route("/tool")
+def tool():
+    if "user_id" not in session:
+        return redirect("/")
+    return render_template("tool.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

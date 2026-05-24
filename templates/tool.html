@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Tool — PromptLens</title>
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">PromptLens</div>
+        <div class="sidebar-user">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-info">
+                <div class="user-name" id="userName">Loading...</div>
+                <div class="user-tag">Prompt Engineer</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-item">
+                <span class="nav-icon">⊞</span>
+                Dashboard
+            </a>
+            <a href="/tool" class="nav-item active">
+                <span class="nav-icon">✦</span>
+                New Prompt
+            </a>
+            <a href="/dashboard" class="nav-item">
+                <span class="nav-icon">◷</span>
+                History
+            </a>
+        </nav>
+        <a href="/logout" class="sidebar-logout">
+            <span>↪</span> Log out
+        </a>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+        <div class="dash-header">
+            <div>
+                <h1 class="tool-title">New Prompt</h1>
+                <p class="dash-sub">Write a prompt, get scored, improve it.</p>
+            </div>
+        </div>
+
+        <div class="tool-grid">
+
+            <!-- INPUT -->
+            <div class="dash-card">
+                <div class="card-header">
+                    <h3>Your Prompt</h3>
+                    <span class="card-tag">Use {text} as placeholder</span>
+                </div>
+                <textarea id="promptInput" class="prompt-input" placeholder="Write your prompt here...&#10;&#10;Example: You are an expert teacher. Explain {text} in simple terms with a real world analogy."></textarea>
+                <button class="btn-analyze" onclick="analyzePrompt()">
+                    Analyze Prompt →
+                </button>
+            </div>
+
+            <!-- RESULTS -->
+            <div id="results" class="results-area">
+                <div class="empty-state">
+                    <div class="empty-icon">✦</div>
+                    <p>Your results will appear here after analysis.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="/static/tool.js"></script>
+</body>
+</html>

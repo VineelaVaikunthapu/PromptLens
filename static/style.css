@@ -11,7 +11,6 @@
     --text:        #2d2d2d;
     --text-muted:  #8a8a8a;
     --border:      #ede8e3;
-    --sage:        #7a9e7e;
     --surface:     #f5f0ec;
 }
 
@@ -56,22 +55,11 @@ em {
     transform: translate(-50%, -50%);
 }
 
-body:has(.magnetic:hover) .cursor-follower {
-    width: 48px;
-    height: 48px;
-    background: rgba(201,160,160,0.1);
-}
-
 /* REVEAL ANIMATIONS */
 .reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-}
-
-.reveal.visible {
     opacity: 1;
     transform: translateY(0);
+    transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
 /* HOVER EFFECTS */
@@ -308,7 +296,7 @@ nav.scrolled {
 }
 
 .hcard-change { font-size: 0.85rem; font-weight: 500; }
-.positive { color: var(--sage); }
+.positive { color: #7a9e7e; }
 
 .hcard-text {
     font-size: 0.95rem;
@@ -479,7 +467,6 @@ nav.scrolled {
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto auto;
     gap: 16px;
 }
 
@@ -671,7 +658,7 @@ nav.scrolled {
 }
 
 .auth-msg.error { color: #c0392b; }
-.auth-msg.success { color: var(--sage); }
+.auth-msg.success { color: #7a9e7e; }
 
 /* FOOTER */
 footer {
