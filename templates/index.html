@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptLens</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div class="badge">⚡ Prompt Engineering Tool</div>
+            <h1>PromptLens</h1>
+            <p>Write a prompt. Get scored. Improve it. See exactly what changed and why.</p>
+        </div>
+
+        <div class="input-card">
+            <div class="input-label">
+                <div class="dot"></div>
+                Your Prompt
+            </div>
+            <textarea id="promptInput" placeholder="Write your prompt here... use {text} as a placeholder for input&#10;&#10;Example: You are an expert teacher. Explain {text} in simple terms with a real world analogy."></textarea>
+            <button class="btn-primary" onclick="analyzePrompt()">
+                Analyze Prompt →
+            </button>
+        </div>
+
+        <div id="results"></div>
+
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
