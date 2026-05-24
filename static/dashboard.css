@@ -553,5 +553,57 @@ body {
     animation: spin 0.8s linear infinite;
     margin: 0 auto 16px;
 }
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+        padding: 20px 16px;
+    }
 
+    .sidebar-logo { font-size: 1rem; }
+
+    .main {
+        margin-left: 200px;
+        padding: 24px 16px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .dash-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tool-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .compare-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 60px;
+        padding: 20px 8px;
+    }
+
+    .sidebar-logo { display: none; }
+    .sidebar-user { display: none; }
+    .nav-item span:last-child { display: none; }
+    .sidebar-logout span:last-child { display: none; }
+
+    .main {
+        margin-left: 60px;
+        padding: 20px 12px;
+    }
+}
 @keyframes spin { to { transform: rotate(360deg); } }
