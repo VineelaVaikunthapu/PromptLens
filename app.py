@@ -10,7 +10,7 @@ from database import init_db
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
-init_db
+init_db()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 @app.route("/")

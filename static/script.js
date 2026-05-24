@@ -1,166 +1,157 @@
-let previousPrompt = null;
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const follower = document.getElementById('cursorFollower');
 
-async function analyzePrompt() {
-    const prompt = document.getElementById("promptInput").value.trim();
+document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    setTimeout(() => {
+        follower.style.left = e.clientX + 'px';
+        follower.style.top = e.clientY + 'px';
+    }, 80);
+});
 
-    if (!prompt) {
-        alert("Please write a prompt first");
+// Nav scroll effect
+window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+    } else {
+        nav.classList.remove('scrolled');
+    }
+});
+
+// Reveal on scroll
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.15 });
+
+reveals.forEach(el => observer.observe(el));
+
+// Auth modal
+function showSection(type) {
+    const authSection = document.getElementById('auth-section');
+    authSection.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    if (type === 'login') {
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+    } else {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'block';
+    }
+}
+
+function hideAuth() {
+    document.getElementById('auth-section').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Close auth on backdrop click
+document.getElementById('auth-section').addEventListener('click', function(e) {
+    if (e.target === this) hideAuth();
+});
+
+// Signup
+async function handleSignup() {
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const msg = document.getElementById('signupMsg');
+
+    if (!name || !email || !password) {
+        msg.textContent = 'Please fill in all fields.';
+        msg.className = 'auth-msg error';
         return;
     }
 
-    showLoading("Analyzing your prompt...");
+    if (password.length < 6) {
+        msg.textContent = 'Password must be at least 6 characters.';
+        msg.className = 'auth-msg error';
+        return;
+    }
+
+    msg.textContent = 'Creating your account...';
+    msg.className = 'auth-msg';
 
     try {
-        const response = await fetch("/analyze", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt })
+        const res = await fetch('/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
         });
 
-        const data = await response.json();
-        showResults(data, prompt);
-        previousPrompt = prompt;
+        const data = await res.json();
 
+        if (data.success) {
+            msg.textContent = 'Account created! Logging you in...';
+            msg.className = 'auth-msg success';
+            await autoLogin(email, password);
+        } else {
+            msg.textContent = data.message;
+            msg.className = 'auth-msg error';
+        }
     } catch (err) {
-        showError();
+        msg.textContent = 'Something went wrong. Try again.';
+        msg.className = 'auth-msg error';
     }
 }
 
-async function comparePrompt() {
-    const newPrompt = document.getElementById("promptInput").value.trim();
+async function autoLogin(email, password) {
+    const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (data.success) window.location.href = '/dashboard';
+}
 
-    if (!newPrompt || !previousPrompt) {
-        alert("Write your improved prompt first");
+// Login
+async function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const msg = document.getElementById('loginMsg');
+
+    if (!email || !password) {
+        msg.textContent = 'Please fill in all fields.';
+        msg.className = 'auth-msg error';
         return;
     }
 
-    if (newPrompt === previousPrompt) {
-        alert("Your prompt hasn't changed. Improve it first then compare.");
-        return;
-    }
-
-    showLoading("Comparing prompts...");
+    msg.textContent = 'Logging in...';
+    msg.className = 'auth-msg';
 
     try {
-        const response = await fetch("/compare", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ old_prompt: previousPrompt, new_prompt: newPrompt })
+        const res = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
         });
 
-        const data = await response.json();
-        showComparison(data, newPrompt);
-        previousPrompt = newPrompt;
+        const data = await res.json();
 
+        if (data.success) {
+            msg.textContent = 'Welcome back!';
+            msg.className = 'auth-msg success';
+            setTimeout(() => window.location.href = '/dashboard', 500);
+        } else {
+            msg.textContent = data.message;
+            msg.className = 'auth-msg error';
+        }
     } catch (err) {
-        showError();
+        msg.textContent = 'Something went wrong. Try again.';
+        msg.className = 'auth-msg error';
     }
 }
-
-function showLoading(message) {
-    document.getElementById("results").innerHTML = `
-        <div class="loading">
-            <div class="loading-spinner"></div>
-            <p>${message}</p>
-        </div>
-    `;
-}
-
-function showResults(data, prompt) {
-    document.getElementById("results").innerHTML = `
-        <div class="score-card">
-            <div class="score-label">Prompt Score</div>
-            <div class="score-number">${data.score}<span class="score-total">/10</span></div>
-        </div>
-
-        <div class="result-card">
-            <div class="result-card-header">
-                <div class="dot"></div>
-                <h3>Output</h3>
-            </div>
-            <p>${data.output}</p>
-        </div>
-
-        <div class="result-card">
-            <div class="result-card-header">
-                <div class="dot"></div>
-                <h3>Feedback</h3>
-            </div>
-            <p>${data.feedback}</p>
-        </div>
-
-        <div class="input-card" style="margin-top: 16px;">
-            <div class="input-label">
-                <div class="dot"></div>
-                Improve Your Prompt
-            </div>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 16px;">
-                Read the feedback above, improve your prompt below, then compare.
-            </p>
-            <button class="btn-compare" onclick="comparePrompt()">
-                ⚡ I improved my prompt — Compare Now
-            </button>
-        </div>
-    `;
-}
-
-function showComparison(data, newPrompt) {
-    const oldWon = data.old_score > data.new_score;
-    const newWon = data.new_score > data.old_score;
-
-    document.getElementById("results").innerHTML = `
-        <div class="score-card">
-            <div class="score-label">Winner</div>
-            <div class="score-number" style="font-size: 2rem;">${data.winner}</div>
-        </div>
-
-        <div class="compare-grid">
-            <div class="compare-card ${oldWon ? 'winner' : 'loser'}">
-                <div class="compare-tag">${oldWon ? '👑 Winner' : 'Previous'}</div>
-                <div class="compare-score">${data.old_score}/10</div>
-                <p>${data.old_output}</p>
-            </div>
-            <div class="compare-card ${newWon ? 'winner' : 'loser'}">
-                <div class="compare-tag">${newWon ? '👑 Winner' : 'New Version'}</div>
-                <div class="compare-score">${data.new_score}/10</div>
-                <p>${data.new_output}</p>
-            </div>
-        </div>
-
-        <div class="result-card">
-            <div class="result-card-header">
-                <div class="dot"></div>
-                <h3>Why</h3>
-            </div>
-            <p>${data.reason}</p>
-        </div>
-
-        <div class="input-card" style="margin-top: 16px;">
-            <div class="input-label">
-                <div class="dot"></div>
-                Keep Improving
-            </div>
-            <button class="btn-compare" onclick="comparePrompt()">
-                ⚡ Improve Again — Compare
-            </button>
-            <button class="btn-primary" onclick="startFresh()" style="margin-top: 8px;">
-                Start New Topic →
-            </button>
-        </div>
-    `;
-}
-
-function showError() {
-    document.getElementById("results").innerHTML = `
-        <div class="loading">
-            <p style="color: #ef4444;">Something went wrong. Try again.</p>
-        </div>
-    `;
-}
-
-function startFresh() {
-    previousPrompt = null;
-    document.getElementById("promptInput").value = "";
-    document.getElementById("results").innerHTML = "";
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+window.addEventListener('load', () => {
+    reveals.forEach(el => {
+        el.classList.add('visible');
+    });
+});
