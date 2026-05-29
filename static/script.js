@@ -12,9 +12,9 @@ document.addEventListener('mousemove', (e) => {
 
 window.addEventListener('scroll', () => {
     const nav = document.getElementById('navbar');
-    if (window.scrollY > 50) {
+    if (nav && window.scrollY > 50) {
         nav.classList.add('scrolled');
-    } else {
+    } else if (nav) {
         nav.classList.remove('scrolled');
     }
 });
@@ -49,6 +49,13 @@ async function handleSignup() {
 
     if (!name || !email || !password) {
         msg.textContent = 'Please fill in all fields.';
+        msg.className = 'auth-msg error';
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        msg.textContent = 'Please enter a valid email address.';
         msg.className = 'auth-msg error';
         return;
     }
@@ -104,6 +111,13 @@ async function handleLogin() {
         return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        msg.textContent = 'Please enter a valid email address.';
+        msg.className = 'auth-msg error';
+        return;
+    }
+
     msg.textContent = 'Logging in...';
     msg.className = 'auth-msg';
 
@@ -127,12 +141,3 @@ async function handleLogin() {
         msg.className = 'auth-msg error';
     }
 }
-
-window.addEventListener('scroll', () => {
-    const nav = document.getElementById('navbar');
-    if (nav && window.scrollY > 50) {
-        nav.classList.add('scrolled');
-    } else if (nav) {
-        nav.classList.remove('scrolled');
-    }
-});
