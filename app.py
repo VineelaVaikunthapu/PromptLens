@@ -165,8 +165,8 @@ def get_stats():
     )
     recent = [dict(row) for row in cursor.fetchall()]
     
-     cursor.execute(
-        "SELECT score, created_at FROM prompts WHERE user_id =  ORDER BY created_at ASC",
+    cursor.execute(
+        "SELECT score, created_at FROM prompts WHERE user_id = %s ORDER BY created_at ASC",
         (session["user_id"],)
     )
     history = [dict(row) for row in cursor.fetchall()]
