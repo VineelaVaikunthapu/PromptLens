@@ -102,7 +102,15 @@ Return only JSON, nothing else.
     start = raw.find("{")
     end = raw.rfind("}") + 1
     result = json.loads(raw[start:end])
-    
+    if "user_id" in session:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO prompts (user_id, prompt, score, feedback) VALUES (%s, %s, %s, %s)",
+            (session["user_id"], new_prompt, result["new_score"], result["reason"])
+        )
+        conn.commit()
+        conn.close()
     return jsonify(result)
 
 
