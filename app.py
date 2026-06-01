@@ -57,12 +57,14 @@ Return only JSON, nothing else.
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO prompts (user_id, prompt, score, feedback) VALUES (?, ?, ?, ?)",
+            "INSERT INTO prompts (user_id, prompt, score, feedback) VALUES (%s, %s, %s, %s)",
             (session["user_id"], prompt, result["score"], result["feedback"])
-        )
+        )   
         conn.commit()
         conn.close()
     return jsonify(result)
+
+
 
 @app.route("/compare", methods=["POST"])
 def compare():
@@ -103,6 +105,8 @@ Return only JSON, nothing else.
     
     return jsonify(result)
 
+
+
 @app.route("/signup", methods=["POST"])
 def signup_route():
     data = request.json
@@ -135,38 +139,34 @@ def get_stats():
     
     conn = get_connection()
     cursor = conn.cursor()
-    
-    # get total prompts
+
     cursor.execute(
-        "SELECT COUNT(*) as total FROM prompts WHERE user_id = ?",
+        "SELECT COUNT(*) as total FROM prompts WHERE user_id = %s",
         (session["user_id"],)
     )
     total = cursor.fetchone()["total"]
-    
-    # get average score
+
     cursor.execute(
-        "SELECT AVG(score) as avg FROM prompts WHERE user_id = ?",
+        "SELECT AVG(score) as avg FROM prompts WHERE user_id = %s",
         (session["user_id"],)
     )
     avg = cursor.fetchone()["avg"]
-    
-    # get best score
+
     cursor.execute(
-        "SELECT MAX(score) as best FROM prompts WHERE user_id = ?",
+        "SELECT MAX(score) as best FROM prompts WHERE user_id = %s",
         (session["user_id"],)
     )
     best = cursor.fetchone()["best"]
     
-    # get recent prompts
+
     cursor.execute(
-        "SELECT prompt, score, feedback, created_at FROM prompts WHERE user_id = ? ORDER BY created_at DESC LIMIT 5",
+        "SELECT prompt, score, feedback, created_at FROM prompts WHERE user_id = %s ORDER BY created_at DESC LIMIT 5",
         (session["user_id"],)
     )
     recent = [dict(row) for row in cursor.fetchall()]
     
-    # get score history for graph
-    cursor.execute(
-        "SELECT score, created_at FROM prompts WHERE user_id = ? ORDER BY created_at ASC",
+     cursor.execute(
+        "SELECT score, created_at FROM prompts WHERE user_id =  ORDER BY created_at ASC",
         (session["user_id"],)
     )
     history = [dict(row) for row in cursor.fetchall()]

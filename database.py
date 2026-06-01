@@ -1,36 +1,42 @@
-import sqlite3
-from datetime import datetime
+import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
-DATABASE = "promptlens.db"
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
 def get_connection():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory =sqlite3.Row
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
+
 def init_db():
-    conn=get_connection()
+    conn = get_connection()
     cursor = conn.cursor()
+    
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    )
-""")
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS prompts(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        prompt text NOT NULL,
-        score INTEGER NOT NULL,
-        feedback TEXT NOT NULL,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id)
-   )
-   """)
+        CREATE TABLE IF NOT EXISTS prompts (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            prompt TEXT NOT NULL,
+            score INTEGER NOT NULL,
+            feedback TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    """)
+    
     conn.commit()
     conn.close()
     print("Database ready.")
+
 if __name__ == "__main__":
     init_db()
